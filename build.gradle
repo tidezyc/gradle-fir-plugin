@@ -1,5 +1,4 @@
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
 
 dependencies {
     compile localGroovy()
@@ -10,12 +9,4 @@ dependencies {
 
 repositories {
     mavenCentral()
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
 }
