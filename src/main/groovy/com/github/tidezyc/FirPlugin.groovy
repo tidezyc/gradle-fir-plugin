@@ -9,7 +9,7 @@ import org.gradle.api.Project
 public class FirPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create('fir', FirExtension)
-        project.tasks.create(name: 'firUpload', type: FirUploadTask, dependsOn: 'packageRelease') {
+        project.tasks.create(name: 'firUpload', type: FirUploadTask, dependsOn: 'assembleDebug') {
 
         }
         project.tasks.withType(FirUploadTask) {
