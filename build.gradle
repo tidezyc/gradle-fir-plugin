@@ -1,0 +1,21 @@
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+    compile 'org.apache.httpcomponents:httpclient:4.4'
+    compile 'org.apache.httpcomponents:httpmime:4.4'
+}
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

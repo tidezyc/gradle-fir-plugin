@@ -1,0 +1,18 @@
+buildscript {
+    dependencies {
+        classpath 'com.github.tidezyc:gradle-fir-plugin:1.0.0'
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+apply plugin: 'fir'
+
+group = "me.tidezyc.android"
+
+fir {
+    appid = "$group"
+    token = "8d970430b34f11e497ce23837fe6331e484f89e3"
+    file = "$buildDir/outputs/apk/$name-release-unsigned.apk"
+}
+
