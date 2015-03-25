@@ -1,4 +1,6 @@
 apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 dependencies {
     compile localGroovy()
@@ -9,4 +11,86 @@ dependencies {
 
 repositories {
     mavenCentral()
+}
+
+group=com.github.tidezyc
+artifact=gradle-fir-plugin
+version="1.0.0-SNAPSHOT"
+
+upload.snapshot.url="https://oss.sonatype.org/content/repositories/snapshots"
+upload.release.url="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+def isReleaseVersion = !(version ==~ /(?i).*SNAPSHOT$/)
+if (isReleaseVersion) {
+    project.ext['upload.url'] = project.ext['upload.release.url']
+} else {
+    project.ext['upload.url'] = project.ext['upload.snapshot.url']
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from tasks.javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: project.ext['upload.url']) {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.version = project.version
+            pom.artifactId = "${project.artifact}"
+            pom.project {
+                name 'gradle-fir-plugin'
+                packaging 'jar'
+                description 'A Gradle plugin for Fir.im'
+                url 'https://github.com/tidezyc/gradle-fir-plugin'
+
+                scm {
+                    url 'scm:git@github.com:tidezyc/gradle-fir-plugin.git'
+                    connection 'scm:git@github.com:tidezyc/gradle-fir-plugin.git'
+                    developerConnection 'scm:git@github.com:tidezyc/gradle-fir-plugin.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id "tidezyc"
+                        email 'tide.zyc@gmail.com'
+                        name 'tidezyc'
+                        url 'https://github.com/tidezyc'
+                        roles {
+                            role 'Developer'
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
